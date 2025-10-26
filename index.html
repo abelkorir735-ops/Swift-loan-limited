@@ -671,7 +671,7 @@
 
   <!-- Swift Loan for Android -->
   
-  <a href="https://www.webintoapp.com/download/apk/914122/app-release.apk" 
+  <a href="https://www.webintoapp.com/download/apk/954772/app-release.apk" 
    target="_blank" 
    onclick="toggleMobileMenu();" 
    class="group flex items-center text-gray-700 hover:text-primary py-2 pl-1">
@@ -1488,52 +1488,7 @@
         }
     </script>
    
-  <!-- Firebase App (core SDK) -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<!-- Firebase Authentication -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<!-- (Optional) Analytics -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
-
-<script>
-  // ✅ Your Firebase config
   
-const firebaseConfig = {
-  apiKey: "AIzaSyBtx-D3nbl1lKOhCzEixDZRgRDM4NbtOBE",
-  authDomain: "swiftauth-5fcb5.firebaseapp.com",
-  projectId: "swiftauth-5fcb5",
-  storageBucket: "swiftauth-5fcb5.firebasestorage.app",
-  messagingSenderId: "990160652137",
-  appId: "1:990160652137:web:abac238567edfdb5671ff8",
-  measurementId: "G-5C1DS28B5S"
-};
-
-
-
-  // ✅ Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  firebase.analytics();
-
-  // ✅ Authentication check
-  firebase.auth().onAuthStateChanged(user => {
-    const loginKey = "imarika_last_login";
-    const lastLogin = localStorage.getItem(loginKey);
-    const now = Date.now();
-    const maxAge = 24 * 60 * 60 * 1000; // 24 hours
-
-    const expired = !lastLogin || now - parseInt(lastLogin) > maxAge;
-
-    if (!user || expired) {
-      localStorage.removeItem(loginKey);
-      firebase.auth().signOut().finally(() => {
-        window.location.href = "login.html";
-      });
-    } else {
-      localStorage.setItem(loginKey, now.toString());
-      updateAuthUI?.(user); // Optional hook
-    }
-  });
-</script>
 
 
     </script>
