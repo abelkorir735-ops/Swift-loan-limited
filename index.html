@@ -256,18 +256,53 @@
             opacity: 0.9;
         }
 
-        /* Native Notification Toast */
+        /* Native Notification Toast (Simulated Android System Notification) */
         .native-notification {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #dc2626 100%);
-            color: white;
-            padding: 16px;
+            top: 10px; /* Top of the screen with slight gap */
+            left: 10px;
+            right: 10px;
+            background: #ffffff;
+            color: #333333;
+            padding: 12px;
             z-index: 2000;
+            border-radius: 14px; /* Rounded corners */
             animation: slideDown 0.4s ease-out;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Softer shadow */
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; /* System font feel */
+        }
+
+        .native-notification-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .native-notification-app-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .native-notification-icon {
+             width: 20px;
+             height: 20px;
+             border-radius: 4px;
+        }
+
+        .native-notification-app-name {
+            font-weight: 500;
+            color: #444;
+        }
+
+        .native-notification-time {
+            font-size: 11px;
+            color: #888;
         }
 
         @keyframes slideDown {
@@ -282,62 +317,42 @@
         }
 
         .native-notification-content {
-            max-width: 600px;
-            margin: 0 auto;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .native-notification-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #000;
         }
 
         .native-notification-text {
-            flex: 1;
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.4;
-        }
-
-        .native-notification-text strong {
-            font-weight: 600;
-        }
-
-        .native-notification-time {
-            font-size: 12px;
-            opacity: 0.9;
+            color: #333;
         }
 
         .native-notification-buttons {
             display: flex;
-            gap: 8px;
-            flex-shrink: 0;
+            gap: 16px;
+            margin-top: 4px;
         }
 
         .native-notification-btn {
-            padding: 8px 16px;
+            background: none;
             border: none;
-            border-radius: 4px;
-            font-size: 13px;
+            padding: 0;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
+            color: #225AAC; /* App primary color for actions */
+            transition: opacity 0.2s;
         }
 
-        .native-notification-btn-apply {
-            background: rgba(255, 255, 255, 0.3);
-            color: white;
-        }
-
-        .native-notification-btn-apply:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        .native-notification-btn-read {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-
-        .native-notification-btn-read:hover {
-            background: rgba(255, 255, 255, 0.4);
+        .native-notification-btn:hover {
+            opacity: 0.8;
         }
 
         /* Permission prompt */
@@ -883,22 +898,30 @@
   function showWelcomeNotification() {
     const now = new Date();
     const time = now.toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit' });
-    const date = now.toLocaleDateString('en-KE', { year: 'numeric', month: 'short', day: 'numeric' });
+    
+    // Check if notification already shown this session
+    if (sessionStorage.getItem('welcomeNotificationShown')) return;
+    sessionStorage.setItem('welcomeNotificationShown', 'true');
 
     const notification = document.createElement('div');
     notification.className = 'native-notification';
     notification.innerHTML = `
-      <div class="native-notification-content">
-        <div class="native-notification-text">
-          <strong>Welcome to Swift Loan!</strong>
-          <div style="margin-top: 4px;">Get instant loans up to 200,000 KES via M-Pesa. Quick approval, no collateral needed.</div>
-          <div class="native-notification-time">${date} ${time}</div>
+        <div class="native-notification-header">
+            <div class="native-notification-app-info">
+               <img src="loan-logo.png" alt="Icon" class="native-notification-icon">
+               <span class="native-notification-app-name">Swift Loan</span>
+               <span class="native-notification-time">${time}</span>
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" style="background:none; border:none; color:#666; font-size:18px; padding:0; line-height:1; cursor:pointer;">&times;</button>
+        </div>
+        <div class="native-notification-content">
+            <div class="native-notification-title">1 unread message</div>
+            <div class="native-notification-text">Get instant loans up to 200,000 KES via M-Pesa. Quick approval, no collateral needed.</div>
         </div>
         <div class="native-notification-buttons">
-          <button class="native-notification-btn native-notification-btn-apply" onclick="goToEligibility()">Apply Now</button>
-          <button class="native-notification-btn native-notification-btn-read" onclick="closeWelcomeNotification()">Mark as Read</button>
+             <button class="native-notification-btn" onclick="goToEligibility()">Apply Now</button>
+             <button class="native-notification-btn" onclick="markAsRead()">Mark as read</button>
         </div>
-      </div>
     `;
     document.body.appendChild(notification);
 
@@ -910,7 +933,12 @@
 
     // Auto-remove after 8 seconds
     setTimeout(() => {
-      notification.remove();
+      if(notification.parentElement) {
+          notification.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+          notification.style.opacity = '0';
+          notification.style.transform = 'translateY(-100%)';
+          setTimeout(() => notification.remove(), 500);
+      }
     }, 8000);
   }
 
@@ -1990,5 +2018,18 @@
 
 
     </script>
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+        });
+    }
+</script>
 </body>
 </html>
