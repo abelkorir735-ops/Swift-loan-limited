@@ -1,0 +1,54 @@
+{
+  "name": "Swift Loan",
+  "short_name": "Swift Loan",
+  "description": "Mobile lending loan application for Kenya with easy loan processing",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#225AAC",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "loan-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "loan-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["finance", "productivity"],
+  "screenshots": [
+    {
+      "src": "loan-logo.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "loan-logo.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Apply for Loan",
+      "short_name": "Apply",
+      "description": "Start your loan application now",
+      "url": "/eligibility.html",
+      "icons": [
+        {
+          "src": "loan-logo.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
