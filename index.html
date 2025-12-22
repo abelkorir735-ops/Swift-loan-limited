@@ -6,6 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Swift Loan - Apply for emergency loans in Kenya via M-Pesa</title>
     <meta name="description" content="Emergency instant mobile loans in Kenya. Apply for quick loans from 15,000 to 200,000 KES via M-Pesa. Swift Loan provides fast, secure mobile lending with instant approval.">
+    <meta name="theme-color" content="#225AAC">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" href="/loan-logo.png">
+    <link rel="apple-touch-icon" href="/loan-logo.png">
     
     <!-- Open Graph Tags -->
     <meta property="og:title" content="Swift Loan - Instant Mobile Loans in Kenya">
@@ -86,6 +95,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     
+    <!-- Preload Hero Images -->
+    <link rel="preload" as="image" href="hero1.png">
+    <link rel="preload" as="image" href="hero2.png">
+
     <style>
         html {
             scroll-behavior: smooth;
@@ -100,10 +113,306 @@
         .swift-primary-hover:hover { background-color: #1a4a8a; }
         .swift-primary-light { background-color: #e8f1ff; }
         
+        /* Hero Background Slider */
+        .hero-bg-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            background-color: #e8f1ff; /* Fallback color */
+        }
+        
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            animation: heroFade 12s infinite;
+        }
+        
+        .hero-slide:nth-child(1) {
+            background-image: url('hero1.png');
+            animation-delay: 0s;
+        }
+        
+        .hero-slide:nth-child(2) {
+            background-image: url('hero2.png');
+            animation-delay: 6s;
+        }
+        
+        @keyframes heroFade {
+            0% { opacity: 0; transform: scale(1); }
+            5% { opacity: 1; }
+            45% { opacity: 1; }
+            50% { opacity: 0; transform: scale(1.02); }
+            100% { opacity: 0; }
+        }
+
+        /* Ensure content is visible above background */
+        .hero-content {
+            position: relative;
+            z-index: 10;
+        }
+
         .gradient-hero {
             background: linear-gradient(135deg, #e8f1ff 0%, #ffffff 100%);
         }
-        
+
+        /* Notification Modal Overlay */
+        .notification-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .notification-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .notification-modal {
+            background: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #dc2626 100%);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            color: white;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+
+        .notification-modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-modal-close:hover {
+            opacity: 0.8;
+        }
+
+        .notification-modal-content {
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .notification-modal-content strong {
+            font-weight: 600;
+        }
+
+        .notification-modal-link {
+            display: inline-block;
+            margin-top: 12px;
+            color: white;
+            text-decoration: underline;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .notification-modal-link:hover {
+            opacity: 0.9;
+        }
+
+        /* Native Notification Toast */
+        .native-notification {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #dc2626 100%);
+            color: white;
+            padding: 16px;
+            z-index: 2000;
+            animation: slideDown 0.4s ease-out;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .native-notification-content {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .native-notification-text {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .native-notification-text strong {
+            font-weight: 600;
+        }
+
+        .native-notification-time {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .native-notification-buttons {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .native-notification-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .native-notification-btn-apply {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .native-notification-btn-apply:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .native-notification-btn-read {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .native-notification-btn-read:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Permission prompt */
+        .notification-permission-prompt {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            max-width: 320px;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-permission-title {
+            font-weight: 600;
+            color: #225AAC;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .notification-permission-text {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .notification-permission-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .notification-permission-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .notification-permission-btn-allow {
+            background: #225AAC;
+            color: white;
+        }
+
+        .notification-permission-btn-allow:hover {
+            background: #1a4a8a;
+        }
+
+        .notification-permission-btn-deny {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .notification-permission-btn-deny:hover {
+            background: #e0e0e0;
+        }
+
         .shadow-swift {
             box-shadow: 0 10px 25px -5px rgba(34, 90, 172, 0.1), 0 10px 10px -5px rgba(34, 90, 172, 0.04);
         }
@@ -359,103 +668,42 @@
 <!-- Logo -->
 <div class="flex-shrink-0">
   <div class="flex items-center">
-    <img src="loan-logo.png" alt="Swift Loan Logo" class="h-16 w-auto">
-    <span class="ml-3 text-2xl font-bold text-[#225AAC]">👤</span>
+    <img src="loan-logo.png" alt="Swift Loan Logo" class="h-10 w-auto">
   </div>
 </div>
-                       
-   <!-- 🔔 Notification -->
-<div class="relative ml-3">
-  <!-- Bell Button -->
+
+<!-- Spacer to push right items to the end -->
+<div class="flex-1"></div>
+
+<!-- Right Side - Notification + Menu -->
+<div class="flex items-center gap-3 md:gap-6">
+  <!-- Notification Bell -->
   <button onclick="openNotification()" 
-          class="relative p-2 rounded-full hover:bg-gray-100 transition" id="bellButton">
-    <!-- Bell Icon -->
+          class="relative p-2 rounded-full hover:bg-gray-100 transition-colors inline-flex items-center justify-center" id="bellButton">
     <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405C18.21 14.79 18 13.918 18 13V9a6 6 0 00-9.33-4.977"/>
       <path stroke-linecap="round" stroke-linejoin="round" d="M9 17h6m-6 0a3 3 0 006 0"/>
     </svg>
-    <!-- 🔴 Glowing Dot -->
-    <span id="notifDot" class="absolute top-1 right-1 flex h-3 w-3">
+    <!-- Notification Badge -->
+    <span id="notifDot" class="absolute top-0 right-0 flex h-3 w-3">
       <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
       <span class="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
     </span>
   </button>
 
-  <!-- 📨 Unread Notification Text -->
-  <span id="notifText" class="ml-1 text-xs text-red-600 font-semibold">1 unread notification</span>
-
-  <!-- ✅ Notification Box (hidden until clicked, centred on mobile) -->
-  <div id="notificationBox" 
-       class="hidden absolute top-full mt-3 w-72 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 text-white text-sm rounded-lg shadow-lg p-4 
-              left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0">
-
-<!-- 🔽 Pointer -->
-<div class="absolute -top-2 left-1/2 -translate-x-1/2 sm:left-auto sm:right-5 sm:translate-x-0">
-  <div class="w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-orange-500"></div>
-</div>
-
-<div class="flex justify-between items-start">
-  <p>
-    🎁 <span class="font-bold">Refer Friends & Earn Rewards:</span> Invite your friends to join and get amazing bonuses for each successful referral!  
-    <br>
-    🔧 <span class="font-bold">Planned Maintenance:</span> Scheduled for <span class="font-bold">Friday, 17 October 2025 at 12:00 PM</span>.
-  </p>
-  <!-- ✖ Close Button -->
-  <button onclick="closeNotification()" class="ml-2 text-white hover:text-gray-200">
-    ✖
+  <!-- Play Store Install Icon -->
+  <button onclick="installApp()" 
+          class="relative p-2 rounded-full hover:bg-gray-100 transition-colors hidden md:inline-flex items-center justify-center" 
+          id="installBtn" 
+          title="Install App"
+          style="display: none;">
+    <svg class="w-6 h-6 text-[#225AAC]" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+    </svg>
   </button>
-</div>
-<a href="referral.html" class="block mt-2 underline font-semibold hover:text-yellow-200">Refer Now →</a>
-</div>
-</div>
 
-<script>
-  function openNotification() {
-    document.getElementById("notificationBox").classList.toggle("hidden");
-    // Hide red dot + unread text when opened
-    document.getElementById("notifDot").style.display = "none";
-    document.getElementById("notifText").style.display = "none";
-  }
-
-  function closeNotification() {
-    document.getElementById("notificationBox").classList.add("hidden");
-  }
-</script>
-</div>
-
-<script>
-  function openNotification() {
-    document.getElementById("notificationBox").classList.toggle("hidden");
-    // Hide red dot + unread text when opened
-    document.getElementById("notifDot").style.display = "none";
-    document.getElementById("notifText").style.display = "none";
-  }
-
-  function closeNotification() {
-    document.getElementById("notificationBox").classList.add("hidden");
-  }
-</script>
-</div>
-
-<script>
-  function openNotification() {
-    document.getElementById("notificationBox").classList.toggle("hidden");
-    // Hide red dot + unread text when opened
-    document.getElementById("notifDot").style.display = "none";
-    document.getElementById("notifText").style.display = "none";
-  }
-
-  function closeNotification() {
-    document.getElementById("notificationBox").classList.add("hidden");
-  }
-</script>
-
-           
-                    </div>
-                </div>
-               
-                <!-- Desktop Navigation -->
-                <nav class="hidden md:flex space-x-8">
+  <!-- Desktop Navigation -->
+  <nav class="hidden md:flex space-x-8 ml-4">
                     <a href="#calculator" class="text-gray-700 hover:text-primary transition-colors duration-200">Loan Calculator</a>
                     <a href="#advantages" class="text-gray-700 hover:text-primary transition-colors duration-200">Our advantages</a>
                     <a href="#steps" class="text-gray-700 hover:text-primary transition-colors duration-200">How to borrow</a>
@@ -470,10 +718,10 @@
                         </div>
                     </div>
                     <a href="#faq" class="text-gray-700 hover:text-primary transition-colors duration-200">FAQ</a>
-                </nav>
+                  </nav>
 
-                <!-- Action Buttons -->
-                <div class="hidden md:flex items-center space-x-3">
+  <!-- Action Buttons -->
+  <div class="hidden md:flex items-center space-x-3">
                     <span class="text-sm text-gray-600 flex items-center">
                         <svg class="text-primary mr-1" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
@@ -504,14 +752,263 @@
                     <button class="login-btn border border-primary text-primary hover:bg-primary hover:bg-opacity-10 px-4 py-2 text-sm font-medium rounded-md transition-swift" onclick="window.location.href='/login.html'">
                         Log in
                     </button>
-                </div>
+                  </div>
 
-                <!-- Mobile menu button -->
-                <button class="md:hidden p-2" onclick="toggleMobileMenu()">
+  <!-- Mobile menu button -->
+  <button class="md:hidden p-2" onclick="toggleMobileMenu()">
                     <svg class="text-primary" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
-                </button>
+                  </button>
+</div>
+</div>
+
+<!-- Notification Modal Overlay -->
+<div id="notificationOverlay" class="notification-overlay">
+  <div class="notification-modal">
+    <div class="notification-modal-header">
+      <h3 class="font-bold text-lg">Important Updates</h3>
+      <button onclick="closeNotification()" class="notification-modal-close">✕</button>
+    </div>
+    <div class="notification-modal-content">
+      <p><strong>Refer Friends & Earn Rewards:</strong> Invite your friends to join and get amazing bonuses for each successful referral!</p>
+      <p style="margin-top: 12px;"><strong>Planned Maintenance:</strong> Scheduled for Friday, 17 October 2025 at 12:00 PM.</p>
+      <a href="referral.html" class="notification-modal-link">Refer Now →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openNotification() {
+    const overlay = document.getElementById("notificationOverlay");
+    overlay.classList.add("show");
+    document.getElementById("notifDot").style.display = "none";
+  }
+
+  function closeNotification() {
+    const overlay = document.getElementById("notificationOverlay");
+    overlay.classList.remove("show");
+  }
+
+  document.getElementById("notificationOverlay")?.addEventListener("click", function(e) {
+    if (e.target === this) {
+      closeNotification();
+    }
+  });
+</script>
+
+<!-- PWA & Notification System -->
+<script>
+  let deferredPrompt = null;
+
+  // Register Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js').then(registration => {
+        console.log('Service Worker registered successfully:', registration);
+      }).catch(err => {
+        console.log('Service Worker registration failed:', err);
+      });
+    });
+  }
+
+  // PWA Install Prompt
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    showInstallButton();
+  });
+
+  function showInstallButton() {
+    const installBtn = document.getElementById('installBtn');
+    if (installBtn) {
+      installBtn.style.display = 'inline-flex';
+    }
+  }
+
+  function installApp() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        } else {
+          console.log('User dismissed the install prompt');
+        }
+        deferredPrompt = null;
+      });
+    }
+  }
+
+  // Notification Permission & System
+  function requestNotificationPermission() {
+    if ('Notification' in window) {
+      if (Notification.permission === 'granted') {
+        showWelcomeNotification();
+      } else if (Notification.permission !== 'denied') {
+        showPermissionPrompt();
+      }
+    }
+  }
+
+  function showPermissionPrompt() {
+    const prompt = document.createElement('div');
+    prompt.className = 'notification-permission-prompt';
+    prompt.innerHTML = `
+      <div class="notification-permission-title">Enable Notifications</div>
+      <div class="notification-permission-text">Get instant updates and special offers sent directly to you.</div>
+      <div class="notification-permission-buttons">
+        <button class="notification-permission-btn notification-permission-btn-allow" onclick="allowNotifications()">Allow</button>
+        <button class="notification-permission-btn notification-permission-btn-deny" onclick="denyNotifications()">Deny</button>
+      </div>
+    `;
+    document.body.appendChild(prompt);
+  }
+
+  function allowNotifications() {
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        const prompts = document.querySelectorAll('.notification-permission-prompt');
+        prompts.forEach(p => p.remove());
+        setTimeout(showWelcomeNotification, 500);
+      }
+    });
+  }
+
+  function denyNotifications() {
+    const prompts = document.querySelectorAll('.notification-permission-prompt');
+    prompts.forEach(p => p.remove());
+  }
+
+  function showWelcomeNotification() {
+    const now = new Date();
+    const time = now.toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit' });
+    const date = now.toLocaleDateString('en-KE', { year: 'numeric', month: 'short', day: 'numeric' });
+
+    const notification = document.createElement('div');
+    notification.className = 'native-notification';
+    notification.innerHTML = `
+      <div class="native-notification-content">
+        <div class="native-notification-text">
+          <strong>Welcome to Swift Loan!</strong>
+          <div style="margin-top: 4px;">Get instant loans up to 200,000 KES via M-Pesa. Quick approval, no collateral needed.</div>
+          <div class="native-notification-time">${date} ${time}</div>
+        </div>
+        <div class="native-notification-buttons">
+          <button class="native-notification-btn native-notification-btn-apply" onclick="goToEligibility()">Apply Now</button>
+          <button class="native-notification-btn native-notification-btn-read" onclick="closeWelcomeNotification()">Mark as Read</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(notification);
+
+    // Play notification sound
+    playNotificationSound();
+
+    // Add to notification bell
+    addNotificationToBell(now);
+
+    // Auto-remove after 8 seconds
+    setTimeout(() => {
+      notification.remove();
+    }, 8000);
+  }
+
+  function closeWelcomeNotification() {
+    const notifications = document.querySelectorAll('.native-notification');
+    notifications.forEach(n => n.remove());
+  }
+
+  function goToEligibility() {
+    closeWelcomeNotification();
+    window.location.href = '/eligibility.html';
+  }
+
+  function playNotificationSound() {
+    // Create a simple beep sound using Web Audio API
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    // Two beeps like Safaricom notification
+    oscillator.frequency.value = 800;
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.1);
+
+    // Second beep
+    const osc2 = audioContext.createOscillator();
+    osc2.connect(gainNode);
+    osc2.frequency.value = 900;
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + 0.15);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
+
+    osc2.start(audioContext.currentTime + 0.15);
+    osc2.stop(audioContext.currentTime + 0.25);
+  }
+
+  function addNotificationToBell(date) {
+    // Store notification in localStorage for display in notification center
+    const notifications = JSON.parse(localStorage.getItem('swiftLoanNotifications') || '[]');
+    notifications.unshift({
+      title: 'Welcome to Swift Loan!',
+      message: 'Get instant loans up to 200,000 KES via M-Pesa',
+      time: date.toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit' }),
+      date: date.toLocaleDateString('en-KE', { year: 'numeric', month: 'short', day: 'numeric' }),
+      read: false
+    });
+    localStorage.setItem('swiftLoanNotifications', JSON.stringify(notifications.slice(0, 10)));
+  }
+
+  // Show permission prompt on page load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      if (Notification.permission === 'default') {
+        requestNotificationPermission();
+      } else if (Notification.permission === 'granted') {
+        showWelcomeNotification();
+      }
+    }, 1500);
+  });
+
+  // Update notification bell to show all notifications
+  const originalOpenNotification = openNotification;
+  window.openNotification = function() {
+    const notifications = JSON.parse(localStorage.getItem('swiftLoanNotifications') || '[]');
+    const overlay = document.getElementById("notificationOverlay");
+    
+    if (notifications.length > 0) {
+      const latest = notifications[0];
+      overlay.querySelector('.notification-modal-header h3').textContent = latest.title;
+      overlay.querySelector('.notification-modal-content').innerHTML = `
+        <p><strong>${latest.title}</strong></p>
+        <p style="margin-top: 12px;">${latest.message}</p>
+        <div style="margin-top: 12px; font-size: 12px; opacity: 0.9;">${latest.date} ${latest.time}</div>
+        <div style="margin-top: 16px; display: flex; gap: 8px;">
+          <button onclick="goToEligibility()" style="flex: 1; padding: 10px; background: rgba(255,255,255,0.3); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Apply Now</button>
+          <button onclick="markAsRead()" style="flex: 1; padding: 10px; background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Mark as Read</button>
+        </div>
+      `;
+    }
+    
+    overlay.classList.add("show");
+    document.getElementById("notifDot").style.display = "none";
+  };
+
+  function markAsRead() {
+    const notifications = JSON.parse(localStorage.getItem('swiftLoanNotifications') || '[]');
+    if (notifications.length > 0) {
+      notifications[0].read = true;
+      localStorage.setItem('swiftLoanNotifications', JSON.stringify(notifications));
+    }
+    closeNotification();
+  }
+</script>
             </div>
         </div>
 
@@ -739,42 +1236,25 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen lg:min-h-[700px]">
-        <!-- Background Pattern -->
-        <div class="absolute inset-0">
-            <div class="absolute top-0 left-0 w-full h-full">
-                <svg class="absolute top-0 left-0 w-full h-full opacity-5" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#225AAC" stroke-width="1"/>
-                        </pattern>
-                    </defs>
-                    <rect width="100%" height="100%" fill="url(#grid)" />
-                </svg>
-            </div>
-            
-            <!-- Floating Elements -->
-            <div class="absolute top-20 left-10 w-16 h-16 bg-blue-200 rounded-full opacity-20 animate-pulse"></div>
-            <div class="absolute top-40 right-20 w-24 h-24 bg-green-200 rounded-full opacity-20 animate-pulse" style="animation-delay: 0.5s;"></div>
-            <div class="absolute bottom-40 left-20 w-20 h-20 bg-purple-200 rounded-full opacity-20 animate-pulse" style="animation-delay: 1s;"></div>
-            
-            <!-- Large Background Circles -->
-            <div class="absolute -top-20 -right-20 w-96 h-96 bg-gradient-to-br from-blue-100 to-transparent rounded-full opacity-30"></div>
-            <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-gradient-to-tr from-blue-100 to-transparent rounded-full opacity-30"></div>
+    <section class="relative overflow-hidden min-h-screen lg:min-h-[700px]">
+        <!-- Autoscrolling Background Images -->
+        <div class="hero-bg-container">
+            <div class="hero-slide"></div>
+            <div class="hero-slide"></div>
         </div>
 
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+        <div class="hero-content relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
             <div class="grid lg:grid-cols-2 gap-12 items-center">
                 <div class="lg:pr-8 animate-fade-in-up">
                     <!-- Badge -->
-                    <div class="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-6">
+                    <div class="inline-flex items-center px-4 py-2 bg-white/90 backdrop-blur-sm text-blue-800 rounded-full text-sm font-medium mb-6 shadow-sm">
                         <svg class="mr-2" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M7 14l3-3 3 3 6-6-1.5-1.5L12 12 9 9 3.5 14.5z"/>
                         </svg>
                         #1 Mobile Lending loan App in Kenya
                     </div>
 
-                    <h1 class="hero-title text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight mb-6">
+                    <h1 class="hero-title text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight mb-6 drop-shadow-sm">
                         Get instant loans up to 
                         <span class="swift-primary relative">
                             200,000 KES
@@ -785,7 +1265,7 @@
                         via M-Pesa
                     </h1>
                     
-                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                    <p class="text-xl text-gray-800 font-medium mb-8 leading-relaxed bg-white/60 backdrop-blur-sm p-4 rounded-lg inline-block">
                         Swift Loan provides quick and secure mobile loans for everyone in Kenya. 
                         Apply anywhere, anytime - get money transferred instantly to your M-Pesa account.
                     </p>
@@ -992,9 +1472,27 @@
                 <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
                     Why choose Swift Loan?
                 </h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-10">
                     We offer the most convenient and reliable loan service in Kenya with unmatched speed and security.
                 </p>
+
+                <!-- Added Informational Photos -->
+                <div class="grid md:grid-cols-2 gap-8 mb-12">
+                    <div class="rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                        <img src="loan1.png" alt="Easy Loan Application Process" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-white">
+                            <h3 class="font-bold text-lg text-gray-900">Easy Application</h3>
+                            <p class="text-gray-600 text-sm">Apply in minutes directly from your phone</p>
+                        </div>
+                    </div>
+                    <div class="rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                        <img src="loan2.png" alt="Fast M-Pesa Disbursement" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-white">
+                            <h3 class="font-bold text-lg text-gray-900">Instant Disbursement</h3>
+                            <p class="text-gray-600 text-sm">Money sent directly to your M-Pesa</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="grid md:grid-cols-3 gap-8 mb-16">
