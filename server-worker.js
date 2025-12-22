@@ -11,7 +11,6 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(urlsToCache).catch(() => {
-        // Continue even if some resources fail to cache
         return Promise.resolve();
       });
     })
@@ -37,7 +36,6 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests
   if (event.request.method !== 'GET') {
     return;
   }
@@ -49,12 +47,10 @@ self.addEventListener('fetch', (event) => {
       }
 
       return fetch(event.request).then((response) => {
-        // Don't cache non-successful responses
         if (!response || response.status !== 200 || response.type === 'error') {
           return response;
         }
 
-        // Clone the response
         const responseToCache = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(event.request, responseToCache);
@@ -62,7 +58,6 @@ self.addEventListener('fetch', (event) => {
 
         return response;
       }).catch(() => {
-        // Return offline page or cached response if available
         return caches.match('/');
       });
     })
@@ -104,13 +99,11 @@ self.addEventListener('notificationclick', (event) => {
   if (event.action === 'apply') {
     event.waitUntil(
       clients.matchAll({ type: 'window' }).then((clientList) => {
-        // Check if window already exists
         for (let client of clientList) {
           if (client.url === '/eligibility.html' && 'focus' in client) {
             return client.focus();
           }
         }
-        // Open new window if not found
         if (clients.openWindow) {
           return clients.openWindow('/eligibility.html');
         }
