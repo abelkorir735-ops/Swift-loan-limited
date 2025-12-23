@@ -1783,5 +1783,61 @@
             new EligibilityForm();
         });
     </script>
+<script>
+    function showNotification(message, duration = 2000) {
+        let notif = document.getElementById('notif-toast');
+        if (!notif) {
+            notif = document.createElement('div');
+            notif.id = 'notif-toast';
+            notif.style.cssText = 'position:fixed;top:20px;right:20px;background:#225AAC;color:white;padding:16px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.2);z-index:9999;font-weight:500;max-width:300px;animation:slideInRight 0.3s ease;';
+            document.body.appendChild(notif);
+        }
+        notif.innerText = message;
+        notif.style.display = 'block';
+        setTimeout(() => {
+            notif.style.display = 'none';
+        }, duration);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Intercept form submission
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const btn = form.querySelector('button[type="submit"]');
+                if(btn) {
+                    btn.innerText = 'Processing...';
+                    btn.disabled = true;
+                }
+                
+                showNotification('Checking eligibility... Loading offers');
+                setTimeout(() => {
+                    localStorage.setItem('loan_progress', 'offers');
+                    window.location.href = 'offers.html';
+                }, 1500);
+            });
+        });
+
+        // Intercept buttons that look like submit but might not be in a form
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(btn => {
+            if (btn.innerText.toLowerCase().includes('check eligibility') || btn.innerText.toLowerCase().includes('submit') || btn.innerText.toLowerCase().includes('next')) {
+                btn.addEventListener('click', (e) => {
+                    if (btn.type !== 'submit') {
+                        e.preventDefault();
+                        btn.innerText = 'Processing...';
+                        showNotification('Checking eligibility... Loading offers');
+                        setTimeout(() => {
+                            localStorage.setItem('loan_progress', 'offers');
+                            window.location.href = 'offers.html';
+                        }, 1500);
+                    }
+                });
+            }
+        });
+    });
+</script>
 </body>
 </html>
+
