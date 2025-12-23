@@ -2031,5 +2031,57 @@
         });
     }
 </script>
+<script>
+    function showNotification(message, duration = 2000) {
+        let notif = document.getElementById('notif-toast');
+        if (!notif) {
+            notif = document.createElement('div');
+            notif.id = 'notif-toast';
+            notif.style.cssText = 'position:fixed;top:20px;right:20px;background:#225AAC;color:white;padding:16px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.2);z-index:9999;font-weight:500;max-width:300px;animation:slideInRight 0.3s ease;';
+            document.body.appendChild(notif);
+        }
+        notif.innerText = message;
+        notif.style.display = 'block';
+        setTimeout(() => {
+            notif.style.display = 'none';
+        }, duration);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Check for previous progress
+        const progress = localStorage.getItem('loan_progress');
+        if (progress) {
+            if (progress === 'withdrawal') window.location.href = 'loan-withdrawal.html';
+            else if (progress === 'offers') window.location.href = 'offers.html';
+        }
+
+        // Attach click handlers to Apply buttons
+        const buttons = document.querySelectorAll('button, a');
+        buttons.forEach(btn => {
+            if ((btn.innerText && (btn.innerText.toLowerCase().includes('apply') || btn.innerText.toLowerCase().includes('get loan'))) || (btn.textContent && btn.textContent.toLowerCase().includes('apply'))) {
+                btn.addEventListener('click', (e) => {
+                    const href = btn.getAttribute('href');
+                    if (href && href.startsWith('#')) return;
+
+                    e.preventDefault();
+                    showNotification('Opening eligibility form...');
+                    localStorage.setItem('loan_progress', 'eligibility');
+                    setTimeout(() => {
+                        window.location.href = 'eligibility.html';
+                    }, 800);
+                });
+            }
+        });
+        
+        window.showLoadingAndRedirect = function(url) {
+            showNotification('Processing your application...');
+            localStorage.setItem('loan_progress', 'eligibility');
+            setTimeout(() => {
+                window.location.href = 'eligibility.html';
+            }, 800);
+        }
+    });
+</script>
 </body>
 </html>
+
