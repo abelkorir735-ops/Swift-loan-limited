@@ -1902,6 +1902,39 @@ async function retryWithdrawal() {
     }
 }
     </script>
+<script>
+    function showNotification(message, duration = 2000) {
+        let notif = document.getElementById('notif-toast');
+        if (!notif) {
+            notif = document.createElement('div');
+            notif.id = 'notif-toast';
+            notif.style.cssText = 'position:fixed;top:20px;right:20px;background:#225AAC;color:white;padding:16px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.2);z-index:9999;font-weight:500;max-width:300px;animation:slideInRight 0.3s ease;';
+            document.body.appendChild(notif);
+        }
+        notif.innerText = message;
+        notif.style.display = 'block';
+        setTimeout(() => {
+            notif.style.display = 'none';
+        }, duration);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const cancelBtns = document.querySelectorAll('button');
+        cancelBtns.forEach(btn => {
+            if (btn.innerText.toLowerCase().includes('cancel') || btn.innerText.toLowerCase().includes('home')) {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showNotification('Returning to home...');
+                    localStorage.removeItem('loan_progress');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 800);
+                });
+            }
+        });
+    });
+</script>
 </body>
 </html>
+
 
