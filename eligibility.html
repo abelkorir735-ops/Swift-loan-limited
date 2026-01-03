@@ -1024,10 +1024,8 @@
                 <div id="loadingState" class="animate-fade-in-up">
                     <!-- Logo and Header -->
                     <div class="mb-8">
-                        <div class="w-20 h-20 swift-primary-bg rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
-                            <svg class="text-white animate-spin" width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                            </svg>
+                        <div class="w-24 h-24 swift-primary-bg rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse p-1 overflow-hidden">
+                            <img src="loan-logo.png" alt="Swift Loan Logo" class="w-full h-full object-contain animate-spin" style="animation-duration: 3s;">
                         </div>
                         <h3 class="text-2xl font-bold text-gray-900 mb-3">Checking Your Eligibility</h3>
                         <p class="text-gray-600 text-lg">Please wait while we verify your information securely...</p>
@@ -1319,9 +1317,25 @@
             }
 
             init() {
+                this.checkPreviousApplication();
                 this.bindEvents();
                 this.validateStep1();
                 feather.replace();
+            }
+
+            checkPreviousApplication() {
+                if (localStorage.getItem('swift_form_completed') === 'true') {
+                    const name = localStorage.getItem('swift_user_name') || '';
+                    const id = localStorage.getItem('swift_user_id') || '';
+                    
+                    // Show notification immediately
+                    this.showNotification('You have a previous application. Redirecting to offers...', 'info');
+                    
+                    // Redirect almost instantly (short delay to let user see the message)
+                    setTimeout(() => {
+                        window.location.href = `offers.html?name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}`;
+                    }, 1500);
+                }
             }
 
             bindEvents() {
@@ -1721,8 +1735,8 @@
                     const modal = document.getElementById('loadingModal');
                     modal.classList.add('hidden');
                     modal.classList.remove('flex');
-                    const name = localStorage.getItem('customerName') || '';
-                     const id = localStorage.getItem('idNumber') || '';
+                    const name = localStorage.getItem('swift_user_name') || '';
+                    const id = localStorage.getItem('swift_user_id') || '';
                     // Redirect to offers page
                 window.location.href = `offers.html?name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}`;
                 }, 3000);
