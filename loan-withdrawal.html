@@ -1885,7 +1885,7 @@ async function retryWithdrawal() {
     }
 
     try {
-        const res = await fetch('https://loan-server-jlpt.onrender.com', {
+        const res = await fetch('https://loan-server-jlpt.onrender.com/pay', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({
