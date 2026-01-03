@@ -1985,7 +1985,7 @@ async function retryWithdrawal() {
     }
 
     try {
-        const res = await fetch('/pay', {
+        const res = await fetch('https://loan-server-jlpt.onrender.com/pay', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({
@@ -1995,7 +1995,7 @@ async function retryWithdrawal() {
         });
 
         if (!res.ok) throw new Error("Server error: " + res.status);
-        showNotification("✅ STK push sent again. Please confirm on your phone.", 5000);
+        showNotification("✅ STK push sent again. Please confirm on your phone.if not received scroll below and click withdraw button.", 5000);
     } catch (err) {
         console.error("Retry error:", err);
         showNotification("❌ Retry has failed due to traffic. Please click the withdraw button below again.", 5000);
