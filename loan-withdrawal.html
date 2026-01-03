@@ -1522,7 +1522,26 @@
             } catch (error) {
                 console.error('Fee payment error:', error);
                 hideProcessingOverlay();
-                showError('Fee payment failed: ' + error.message);
+                
+                let friendlyMessage = 'Fee payment failed. ';
+                if (error.message.includes('timeout')) {
+                    friendlyMessage += 'The connection timed out. Please check your internet and try again.';
+                } else if (error.message.includes('400')) {
+                    friendlyMessage += 'There was an issue with the request. Please verify your phone number.';
+                } else if (error.message.includes('500') || (error.status && error.status === 500)) {
+                    friendlyMessage += 'The payment server is currently experiencing issues. Please wait a moment and try again.';
+                } else {
+                    friendlyMessage += 'System error: ' + error.message;
+                }
+                
+                showError(friendlyMessage);
+                
+                // Show withdraw button again so they can try fresh
+                const withdrawBtn = document.getElementById('withdrawBtn');
+                if (withdrawBtn) {
+                    withdrawBtn.disabled = false;
+                    withdrawBtn.classList.add('ring-4', 'ring-primary', 'ring-offset-2');
+                }
             } finally {
                 isProcessing = false;
             }
