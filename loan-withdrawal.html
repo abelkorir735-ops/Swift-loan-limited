@@ -780,23 +780,20 @@
                 <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-exclamation-circle text-red-600 text-2xl"></i>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Transaction Cancelled</h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Transaction Cancelled/Failed</h3>
                 <p class="text-gray-600 text-sm mb-6">You cancelled the payment or it timed out. Please retry to complete your withdrawal.</p>
                 
                 <div class="bg-gray-50 rounded-xl p-4 mb-6 space-y-2 text-left">
+                    
                     <div class="flex justify-between text-sm">
-                        <span class="text-gray-500">Withdrawal Amount:</span>
-                        <span id="retryLoanAmount" class="font-bold text-gray-900">KES 0</span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-500">Processing Fee:</span>
+                        <span class="text-gray-500">Savings amount:</span>
                         <span id="retryFeeAmount" class="font-bold text-orange-600">KES 0</span>
                     </div>
                 </div>
 
                 <div class="space-y-3">
                     <button onclick="retryWithdrawal()" class="w-full py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary-dark transition-all shadow-lg shadow-primary/20 flex items-center justify-center">
-                        <i class="fas fa-sync-alt mr-2"></i> Retry STK Push
+                        <i class="fas fa-sync-alt mr-2"></i> Retry payment
                     </button>
                     <button onclick="closeRetryPopup()" class="w-full py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-all flex items-center justify-center">
                         Cancel
