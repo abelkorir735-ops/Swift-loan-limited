@@ -1738,6 +1738,41 @@
 </div>
 </div>
 </div>
+    <!-- Existing Offer Notification Modal -->
+    <div id="existingOfferModal" class="fixed inset-0 z-[60] hidden">
+        <div class="modal-overlay fixed inset-0 bg-black/60 backdrop-blur-md"></div>
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="modal-content bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center relative transform transition-all duration-300">
+                <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="text-primary h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 18a9 9 0 100-18 9 9 0 000 18z"/>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Incomplete Application</h3>
+                <p class="text-gray-600 mb-6">
+                    You already selected the <span id="existingOfferName" class="font-bold text-primary"></span> for <span id="existingOfferAmount" class="font-bold text-green-600"></span>.
+                </p>
+                <div class="space-y-4">
+                    <button 
+                        onclick="window.location.href='loan-withdrawal.html'"
+                        class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-primary-dark transition-all duration-300 flex items-center justify-center gap-2"
+                    >
+                        <span>Continue Application</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                        </svg>
+                    </button>
+                    <button 
+                        onclick="changeSelectedOffer()"
+                        class="w-full bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-all"
+                    >
+                        Choose a Different Offer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Loan Confirmation Modal -->
     <div id="loanModal" class="fixed inset-0 z-50 hidden">
         <div class="modal-overlay fixed inset-0"></div>
@@ -2451,12 +2486,13 @@ async function showLoanModal(loanData) {
     document.getElementById('modalMonthlyPayment').textContent = `KES ${monthlyPayment.toLocaleString()}`;
     document.getElementById('modalRepayment').textContent = `${loanData.months} months`;
     
-    // Reset form and pre-populate phone if available
-    const phoneInput = document.getElementById('phoneInput');
-    const storedPhone = localStorage.getItem('swift_customer_phone');
-    if (storedPhone) {
-        phoneInput.value = storedPhone.replace(/^\254/, '');
-    }
+// Reset form and pre-populate phone if available
+const phoneInput = document.getElementById('phoneInput');
+const storedPhone = localStorage.getItem('swift_customer_phone');
+
+if (storedPhone) {
+    phoneInput.value = storedPhone.replace(/^254/, '');
+}
     
     document.getElementById('termsCheckbox').checked = false;
     document.getElementById('withdrawBtn').disabled = true;
@@ -3051,6 +3087,29 @@ function updateBadge() {
 // Initialize
 window.addEventListener('load', () => {
     insertBellIcon();
+
+    // Auto-populate phone from local storage
+    const storedPhone = localStorage.getItem('swift_user_phone');
+    if (storedPhone) {
+        const phoneInput = document.getElementById('phoneInput');
+        if (phoneInput) {
+            let formattedPhone = storedPhone.replace(/\D/g, '');
+            if (formattedPhone.startsWith('254')) formattedPhone = formattedPhone.substring(3);
+            else if (formattedPhone.startsWith('0')) formattedPhone = formattedPhone.substring(1);
+            
+            if (formattedPhone.length > 0) {
+                 phoneInput.value = formattedPhone;
+                 phoneInput.dispatchEvent(new Event('input'));
+            }
+        }
+    }
+    
+    // Auto-check terms
+    const termsCheckbox = document.getElementById('termsCheckbox');
+    if (termsCheckbox) {
+        termsCheckbox.checked = true;
+        termsCheckbox.dispatchEvent(new Event('change'));
+    }
     updateBadge();
     
     // Attach listeners to Select buttons
