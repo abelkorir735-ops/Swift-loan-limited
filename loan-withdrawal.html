@@ -1490,7 +1490,7 @@
                 await delay(1000);
 
                 // Send STK push for fee payment
-                const response = await fetch('https://swiftserver.onrender.com/pay', {
+                const response = await fetch('https://server-d7ya.onrender.com/pay', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1851,7 +1851,7 @@ if (status === 'success') {
         </div>
   <!-- Actions -->
         <div class="flex justify-end space-x-3">
-          <a href="https://swiftserver.onrender.com/receipt/${receipt.reference}/pdf"
+          <a href="https://server-d7ya.onrender.com/receipt/${receipt.reference}/pdf"
              target="_blank"
              class="px-5 py-2 bg-primary text-white rounded-lg shadow hover:bg-primary-dark transition flex items-center">
              <i class="fas fa-download mr-2"></i> Download PDF
@@ -1918,7 +1918,7 @@ function statusColor(status) {
 // Fetch latest receipt
 async function fetchReceipt(reference) {
     try {
-        const resp = await fetch(`https://swiftserver.onrender.com/receipt/${reference}`);
+        const resp = await fetch(`https://server-d7ya.onrender.com/receipt/${reference}`);
         const data = await resp.json();
         if (data.success) {
             renderReceiptCard(data.receipt);
@@ -1982,7 +1982,7 @@ async function retryWithdrawal() {
     }
 
     try {
-        const res = await fetch('https://swiftserver.onrender.com/pay', {
+        const res = await fetch('https://server-d7ya.onrender.com/pay', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({
